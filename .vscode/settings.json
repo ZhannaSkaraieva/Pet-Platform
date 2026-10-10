@@ -1,0 +1,13 @@
+{
+  "editor.formatOnSave": true,
+  "editor.tabCompletion": "on",
+  "terminal.integrated.commandsToSkipShell": [""],
+  "debug.console.acceptSuggestionOnEnter": "on",
+  "editor.quickSuggestions": {
+    "other": "on",
+    "comments": "off",
+    "strings": "off"
+  },
+  "editor.suggest.preview": true,
+  "editor.acceptSuggestionOnEnter": "on"
+}
