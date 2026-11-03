@@ -4,47 +4,58 @@ import {
   Delete,
   Get,
   Param,
-  ParseIntPipe,
   Patch,
   Post,
   Query,
 } from '@nestjs/common';
 import { UsersService } from './users.service.js';
-import { CreateUserDto } from './dto/create-user.dto.js';
+import { CreateUserDto } from './dto/user-create.dto.js';
 import { UserResponseDto } from './dto/user-response.dto.js';
-import { FindUsersDto } from './dto/find-user.dto.js';
-import { UpdateUserDto } from './dto/update-user.dto.js';
+import { FindUsersDto } from './dto/user-find.dto.js';
+import { UpdateUserDto } from './dto/user-update.dto.js';
+import { Public } from '@nestjs/authentication';
 
 @Controller('users')
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
+  @Public()
+  //Post /users
   @Post()
-  async create(@Body() dto: CreateUserDto): Promise<UserResponseDto> {
-    return this.usersService.createUser(dto);
+  async createUser(@Body() dto: CreateUserDto): Promise<UserResponseDto> {
+    return await this.usersService.createUser(dto);
   }
 
-  @Get()
-  async findAll(@Query() dto: FindUsersDto): Promise<UserResponseDto[]> {
-    return this.usersService.findAll(dto);
+  @Public()
+  //Get /users/all
+  @Get('all')
+  async findAllUsers(@Query() dto: FindUsersDto): Promise<UserResponseDto[]> {
+    const users = await this.usersService.findAllUsers(dto);
+    return users.map((user) => new UserResponseDto(user));
   }
 
+  @Public()
+  //Get users/:id
   @Get(':id')
-  async findOne(@Param('id') id: string): Promise<UserResponseDto | null> {
-    return this.usersService.findOne(id);
+  async findById(@Param('id') id: string): Promise<UserResponseDto | null> {
+    return await this.usersService.findById(id);
   }
 
+  @Public()
+  //Patch users/:id
   @Patch(':id')
   async update(
     @Param('id') id: string,
     @Body() dto: UpdateUserDto,
   ): Promise<UserResponseDto> {
-    return this.usersService.updateUser(id, dto);
+    return await this.usersService.updateUser(id, dto);
   }
 
+  @Public()
+  //Delete users/:id
   @Delete(':id')
   async delete(@Param('id') id: string): Promise<UserResponseDto> {
-    return this.usersService.deleteUser(id);
+    return await this.usersService.deleteUser(id);
   }
 }
 

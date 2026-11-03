@@ -1,94 +1,117 @@
 import {
   BadRequestException,
-  ConflictException,
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
-import { Prisma } from '../generated/prisma/client.js';
-import { CreateUserDto } from './dto/create-user.dto.js';
-import { UserResponseDto } from './dto/user-response.dto.js';
-import { FindUsersDto } from './dto/find-user.dto.js';
+
 import { UsersDataService } from './user.data-service.js';
-import { UpdateUserDto } from './dto/update-user.dto.js';
+import type {
+  FindUsers,
+  UserCreate,
+  UserResponse,
+  UserUpdate,
+} from './interface/user.interface.js';
+import { PasswordHasher } from '@nestjs/authentication';
 
 @Injectable()
 export class UsersService {
-  constructor(private readonly usersDataService: UsersDataService) {}
+  constructor(
+    private readonly usersDataService: UsersDataService,
+    private readonly passwordHasher: PasswordHasher,
+  ) {}
 
-  async createUser(dto: CreateUserDto): Promise<UserResponseDto> {
-    if (!dto.email && !dto.phone) {
-      throw new BadRequestException('Either email or phone is required');
+  async createUser(userCreate: UserCreate): Promise<UserResponse> {
+    const { email, password } = userCreate;
+    if (!email) {
+      throw new BadRequestException('The email is required');
     }
-    const data: Prisma.UserCreateInput = {
-      email: dto.email || null,
-      password: dto.password || null,
-      phone: dto.phone,
-      role: dto.role,
-      firstName: dto.firstName,
-      lastName: dto.lastName,
-      avatarUrl: dto.avatarUrl,
-      isVerified: dto.isVerified,
+    const passwordHashed = await this.passwordHasher.hash(password);
+    const newUser = await this.usersDataService.createUser({
+      email: email,
+      passwordHash: passwordHashed,
+      isVerified: false, // New users are unverified by default);
+    });
+    return {
+      id: newUser.id,
+      email: newUser.email,
+      isVerified: newUser.isVerified,
     };
-    try {
-      const user = await this.usersDataService.createUser(data);
-      return user as UserResponseDto;
-    } catch (error) {
-      if (
-        error instanceof Prisma.PrismaClientKnownRequestError &&
-        error.code === 'P2002'
-      ) {
-        throw new ConflictException(
-          'User with this email or phone already exists',
-        );
-      }
+  }
 
-      throw error;
+  async findAllUsers(findUsers: FindUsers): Promise<UserResponse[]> {
+    const { id, email, isVerified } = findUsers;
+
+    const users = await this.usersDataService.findAll({
+      where: {
+        id: id,
+        email: email,
+        isVerified: isVerified,
+      },
+    });
+    if (!users || users.length === 0) {
+      throw new BadRequestException('No users found');
+    }
+    return users.map((user) => ({
+      id: user.id,
+      email: user.email,
+      isVerified: user.isVerified,
+    }));
+  }
+
+  async findOne(id?: string, email?: string) {
+    if (!id && !email) {
+      throw new BadRequestException('Id or email is required');
+    }
+    try {
+      return await this.usersDataService.findOne(id, email);
+    } catch {
+      throw new Error('Error fetching users');
     }
   }
 
-  async findAll(dto: FindUsersDto): Promise<UserResponseDto[]> {
-    try {
-      return (await this.usersDataService.findAll({
-        where: {
-          email: dto.email,
-          phone: dto.phone,
-          role: dto.role,
-          firstName: dto.firstName,
-          lastName: dto.lastName,
-          avatarUrl: dto.avatarUrl,
-          isVerified: dto.isVerified,
-        },
-      })) as UserResponseDto[];
-    } catch (error) {
-      throw new NotFoundException('Error finding users');
-    }
-  }
-
-  async findOne(id: string): Promise<UserResponseDto | null> {
-    try {
-      const user = await this.usersDataService.findOne(id);
-      if (!user) {
-        throw new NotFoundException('User not found');
-      }
-      return user as UserResponseDto;
-    } catch (error) {
-      throw new NotFoundException('Error finding user');
-    }
-  }
-
-  async updateUser(id: string, dto: UpdateUserDto): Promise<UserResponseDto> {
+  async findById(id: string): Promise<UserResponse | null> {
     const user = await this.usersDataService.findOne(id);
     if (!user) {
       throw new NotFoundException('User not found');
     }
-    return await this.usersDataService.update(id, dto);
+    return { id: user.id, email: user.email, isVerified: user.isVerified };
   }
 
-  async deleteUser(id: string): Promise<UserResponseDto> {
+  async updateUser(id: string, userUpdate: UserUpdate): Promise<UserResponse> {
     const user = await this.usersDataService.findOne(id);
     if (!user) {
-      throw new NotFoundException('User not found');
+      throw new BadRequestException('User not found');
     }
-    return await this.usersDataService.delete(id);
+    const updatedUser = await this.usersDataService.update(id, userUpdate);
+    return {
+      id: updatedUser.id,
+      email: updatedUser.email,
+      isVerified: updatedUser.isVerified,
+    };
+  }
+
+  async deleteUser(id: string): Promise<UserResponse> {
+    const user = await this.usersDataService.findOne(id);
+    if (!user) {
+      throw new BadRequestException('User not found');
+    }
+    const deletedUser = await this.usersDataService.delete(id);
+    return {
+      id: deletedUser.id,
+      email: deletedUser.email,
+      isVerified: deletedUser.isVerified,
+    };
+  }
+
+  async updatePasswordHash(
+    id: string,
+    passwordHash: string,
+  ): Promise<UserResponse> {
+    return this.usersDataService.updatePasswordHash(id, passwordHash);
+  }
+
+  // Runs when the link is used. It verifies nothing if the address changed since.
+  markVerified(userId: string, email: string) {
+    return this.usersDataService.markEmailVerified(userId, email);
   }
 }
