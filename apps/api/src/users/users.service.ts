@@ -77,6 +77,14 @@ export class UsersService {
     return { id: user.id, email: user.email, isVerified: user.isVerified };
   }
 
+  async findByEmail(email: string): Promise<UserResponse | null> {
+    const user = await this.usersDataService.findOne(undefined, email);
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+    return { id: user.id, email: user.email, isVerified: user.isVerified };
+  }
+
   async updateUser(id: string, userUpdate: UserUpdate): Promise<UserResponse> {
     const user = await this.usersDataService.findOne(id);
     if (!user) {
@@ -103,15 +111,45 @@ export class UsersService {
     };
   }
 
-  async updatePasswordHash(
-    id: string,
-    passwordHash: string,
-  ): Promise<UserResponse> {
-    return this.usersDataService.updatePasswordHash(id, passwordHash);
+  async updatePasswordHash(id: string, passwordHash: string): Promise<void> {
+    await this.usersDataService.updatePasswordHash(id, passwordHash);
   }
 
   // Runs when the link is used. It verifies nothing if the address changed since.
   markVerified(userId: string, email: string) {
     return this.usersDataService.markEmailVerified(userId, email);
+  }
+
+  async findForPasswordReset(email: string) {
+    const user = await this.usersDataService.findOne(undefined, email);
+    return user?.passwordHash
+      ? { id: user.id, email: user.email, passwordHash: user.passwordHash }
+      : null;
+  }
+
+  async findByIdentity(
+    provider: string,
+    subject: string,
+  ): Promise<UserResponse | null> {
+    const user = await this.usersDataService.findByIdentity(provider, subject);
+    return (
+      user && { id: user.id, email: user.email, isVerified: user.isVerified }
+    );
+  }
+  async createVerifiedUser(email: string): Promise<UserResponse> {
+    const user = await this.usersDataService.createUser({
+      email,
+      isVerified: true,
+    });
+    return { id: user.id, email: user.email, isVerified: user.isVerified };
+  }
+
+  async linkIdentity(
+    userId: string,
+    provider: string,
+    subject: string,
+  ): Promise<UserResponse | null> {
+    await this.usersDataService.linkIdentity(userId, provider, subject);
+    return this.findById(userId);
   }
 }

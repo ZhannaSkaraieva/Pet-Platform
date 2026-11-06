@@ -1,11 +1,11 @@
-import { Module } from '@nestjs/common';
+import { Module, NotFoundException } from '@nestjs/common';
 import { createObserveModule } from '@nestjs/observe';
 import { AppController } from './app.controller.js';
 import { AppService } from './app.service.js';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { UsersModule } from './users/users.module.js';
 import { AuthModule } from './auth/auth.module.js';
-import { AuthenticationModule } from '@nestjs/authentication';
+import { AuthenticationModule, google } from '@nestjs/authentication';
 import {
   FileTemplateEngine,
   LogMailTransport,
@@ -57,6 +57,20 @@ export const { ObserveModule, ObserveInstrument } = createObserveModule();
         },
         emailVerification: {
           url: `${config.getOrThrow<string>('APP_URL')}/verify-email`,
+        },
+        passwordReset: {
+          url: `${config.getOrThrow<string>('APP_URL')}/password-reset`,
+        },
+
+        oidc: {
+          // The callback route of OidcController, registered with Google.
+          callbackUrl: `${config.getOrThrow<string>('API_URL')}/auth/oidc/:provider/callback`,
+          providers: {
+            google: google({
+              clientId: process.env.GOOGLE_CLIENT_ID!,
+              clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
+            }),
+          },
         },
       }),
     }),

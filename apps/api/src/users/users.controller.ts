@@ -19,12 +19,12 @@ import { Public } from '@nestjs/authentication';
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
-  @Public()
-  //Post /users
-  @Post()
-  async createUser(@Body() dto: CreateUserDto): Promise<UserResponseDto> {
-    return await this.usersService.createUser(dto);
-  }
+  // @Public()
+  // //Post /users
+  // @Post()
+  // async createUser(@Body() dto: CreateUserDto): Promise<UserResponseDto> {
+  //   return await this.usersService.createUser(dto);
+  // }
 
   @Public()
   //Get /users/all

@@ -76,4 +76,33 @@ export class UsersDataService {
     });
     return true;
   }
+  async findByIdentity(
+    provider: string,
+    subject: string,
+  ): Promise<User | null> {
+    const identity = await this.prisma.userIdentity.findUnique({
+      where: {
+        provider_subject: {
+          provider,
+          subject,
+        },
+      },
+      include: { user: true },
+    });
+    return identity?.user ?? null;
+  }
+
+  async linkIdentity(
+    id: string,
+    provider: string,
+    subject: string,
+  ): Promise<void> {
+    await this.prisma.userIdentity.create({
+      data: {
+        userId: id,
+        provider,
+        subject,
+      },
+    });
+  }
 }

@@ -24,8 +24,8 @@ export class EmailVerificationController {
   @Public()
   @Post('verify')
   @HttpCode(200)
-  async verify(@Body() token: VerifyTokenDto) {
-    const verified = await this.emailVerificationService.verify(token.token);
+  async verify(@Body() dto: VerifyTokenDto) {
+    const verified = await this.emailVerificationService.verify(dto.token);
     if (!verified) {
       throw new BadRequestException('Invalid or expired link');
     }
