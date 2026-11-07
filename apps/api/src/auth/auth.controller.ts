@@ -7,13 +7,15 @@ import {
 } from '@nestjs/common';
 import {
   EmailVerificationService,
-  Public,
   SignInService,
+  Public as AuthPublic,
 } from '@nestjs/authentication';
 import { SignUpDto } from './dto/sign-up.dto.js';
 import { AuthService } from './auth.service.js';
 import { SignInDto } from './dto/sign-in.dto.js';
+import { Public } from './public.decorator.js';
 
+@AuthPublic()
 @Public()
 @Controller('auth')
 export class AuthController {
@@ -23,6 +25,7 @@ export class AuthController {
     private readonly emailVerificationService: EmailVerificationService,
   ) {}
 
+  @AuthPublic()
   @Public()
   @Post('sign-up')
   async signUp(@Body() body: SignUpDto) {
@@ -32,6 +35,7 @@ export class AuthController {
     return user;
   }
 
+  @AuthPublic()
   @Public()
   @Post('sign-in')
   @HttpCode(200)
@@ -40,10 +44,7 @@ export class AuthController {
     if (!user) {
       throw new UnauthorizedException('Invalid email or password');
     }
-    const { session } = await this.signInService.signIn(user.id, {
-      method: 'password',
-    });
-
-    return { mfaRequired: session.mfa === 'pending' };
+    const result = await this.authservice.signIn(user);
+    return result;
   }
 }

@@ -45,16 +45,8 @@ export const { ObserveModule, ObserveInstrument } = createObserveModule();
       }),
     }),
     AuthenticationModule.forRootAsync({
-      // session: {
-      //     absoluteTtl: '14d',
-      //     idleTtl: '3d',
-      //   },
       inject: [ConfigService],
       useFactory: (config: ConfigService) => ({
-        session: {
-          absoluteTtl: '14d',
-          idleTtl: '3d',
-        },
         emailVerification: {
           url: `${config.getOrThrow<string>('APP_URL')}/verify-email`,
         },

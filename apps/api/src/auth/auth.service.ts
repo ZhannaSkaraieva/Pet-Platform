@@ -1,13 +1,19 @@
 import { PasswordHasher } from '@nestjs/authentication';
-import { ConflictException, Injectable } from '@nestjs/common';
+import {
+  ConflictException,
+  Injectable,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { RegisteredUser, SignIn, SignUp } from './interface/auth.interface.js';
 import { AuthDataService } from './auth.data-service.js';
+import { JwtService } from '@nestjs/jwt';
 
 @Injectable()
 export class AuthService {
   constructor(
     private readonly authDataService: AuthDataService,
     private readonly passwordHasher: PasswordHasher,
+    private jwtService: JwtService,
   ) {}
 
   async register(singUp: SignUp): Promise<RegisteredUser> {
@@ -31,8 +37,8 @@ export class AuthService {
   }
 
   /** The user, or `null` when the email or the password is wrong. */
-  async verify(singIn: SignIn): Promise<RegisteredUser | null> {
-    const { email, password } = singIn;
+  async verify(signIn: SignIn): Promise<RegisteredUser | null> {
+    const { email, password } = signIn;
     const found = await this.authDataService.findByEmail(email);
     // With no account (or no password), verify() checks a dummy hash, so the
     // response time does not reveal which emails are registered.
@@ -52,5 +58,11 @@ export class AuthService {
       );
     }
     return { id: found.id, email: found.email, isVerified: found.isVerified };
+  }
+
+  async signIn(user: RegisteredUser): Promise<{ access_token: string }> {
+    const payload = { email: user.email, sub: user.id };
+    const access_token = this.jwtService.sign(payload);
+    return { access_token };
   }
 }
