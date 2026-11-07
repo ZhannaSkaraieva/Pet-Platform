@@ -16,7 +16,7 @@ export class AuthService {
     private jwtService: JwtService,
   ) {}
 
-  async register(singUp: SignUp): Promise<RegisteredUser> {
+  async signUp(singUp: SignUp): Promise<RegisteredUser> {
     const { email, password } = singUp;
     const existingUser = await this.authDataService.findByEmail(email);
     if (existingUser) {

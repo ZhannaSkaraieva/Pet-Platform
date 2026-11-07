@@ -28,11 +28,11 @@ export class AuthController {
   @AuthPublic()
   @Public()
   @Post('sign-up')
+  @HttpCode(200)
   async signUp(@Body() body: SignUpDto) {
-    const user = await this.authservice.register(body);
+    const user = await this.authservice.signUp(body);
     // The link in this email proves the customer owns the address.
-    await this.emailVerificationService.send(user);
-    return user;
+    return await this.emailVerificationService.send(user);
   }
 
   @AuthPublic()
