@@ -10,12 +10,13 @@ import {
   type OidcProfile,
   type OidcResolveContext,
 } from '@nestjs/authentication';
-import { UsersService } from '../users/users.service.js';
+import { AuthService } from '../auth.service.js';
+import { normalizeEmailString } from '../../users/dto/normalize-email.js';
 
 @Injectable()
 export class AccountLinker extends OidcAccountResolver {
   constructor(
-    private readonly usersService: UsersService,
+    private readonly authService: AuthService,
     registry: AuthenticationRegistry,
   ) {
     super();
@@ -27,7 +28,7 @@ export class AccountLinker extends OidcAccountResolver {
     _tokens: OAuthTokens,
     { linkTo }: OidcResolveContext,
   ) {
-    const linked = await this.usersService.findByIdentity(
+    const linked = await this.authService.findByIdentity(
       profile.provider,
       profile.subject,
     );
@@ -39,7 +40,7 @@ export class AccountLinker extends OidcAccountResolver {
           'This Google account belongs to another customer',
         );
       }
-      return this.usersService.linkIdentity(
+      return this.authService.linkIdentity(
         linkTo.id,
         profile.provider,
         profile.subject,
@@ -56,10 +57,11 @@ export class AccountLinker extends OidcAccountResolver {
     if (!profile.email || !profile.emailVerified) {
       return null; // 403
     }
-    const existing = await this.usersService.findByEmail(profile.email);
+    const email = normalizeEmailString(profile.email);
+    const existing = await this.authService.findByEmail(email);
     if (!existing) {
-      const user = await this.usersService.createVerifiedUser(profile.email);
-      return this.usersService.linkIdentity(
+      const user = await this.authService.createVerifiedUser(email);
+      return this.authService.linkIdentity(
         user.id,
         profile.provider,
         profile.subject,
@@ -73,7 +75,7 @@ export class AccountLinker extends OidcAccountResolver {
         'Sign in with your password, then connect Google from your account',
       );
     }
-    return this.usersService.linkIdentity(
+    return this.authService.linkIdentity(
       existing.id,
       profile.provider,
       profile.subject,

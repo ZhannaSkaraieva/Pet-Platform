@@ -1,5 +1,2 @@
-import type { TransformFnParams } from 'class-transformer';
-export const normalizeEmail = ({ value }: TransformFnParams): unknown =>
-  typeof value === 'string'
-    ? value.trim().normalize('NFC').toLowerCase()
-    : value;
+export const normalizeEmailString = (email: string): string =>
+  email.trim().normalize('NFC').toLowerCase();

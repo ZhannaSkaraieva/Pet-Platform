@@ -1,9 +1,11 @@
 import { Transform } from 'class-transformer';
 import { IsEmail } from 'class-validator';
-import { normalizeEmail } from '../../users/dto/normalize-email.js';
+import { normalizeEmailString } from '../../users/dto/normalize-email.js';
 
 export class EmailDto {
-  @Transform(normalizeEmail)
+  @Transform(({ value }) => {
+    return typeof value === 'string' ? normalizeEmailString(value) : value;
+  })
   @IsEmail()
   email: string;
 }

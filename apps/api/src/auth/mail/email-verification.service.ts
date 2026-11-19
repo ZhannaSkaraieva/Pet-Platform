@@ -5,7 +5,7 @@ import {
   type EmailVerificationLink,
 } from '@nestjs/authentication';
 import { Mailer, type Mailable } from '@nestjs/mail';
-import { UsersService } from '../users/users.service.js';
+import { AuthService } from '../auth.service.js';
 
 @Injectable()
 export class VerifyEmailMail implements Mailable<EmailVerificationLink> {
@@ -21,8 +21,8 @@ export class VerifyEmailMail implements Mailable<EmailVerificationLink> {
 @Injectable()
 export class EmailVerificationMailer extends EmailVerificationHandler {
   constructor(
-    private readonly usersService: UsersService,
     private readonly mailer: Mailer,
+    private readonly authservice: AuthService,
     registry: AuthenticationRegistry,
   ) {
     super();
@@ -35,6 +35,6 @@ export class EmailVerificationMailer extends EmailVerificationHandler {
 
   // Runs when the link is used. It verifies nothing if the address changed since.
   markVerified(userId: string, email: string) {
-    return this.usersService.markVerified(userId, email);
+    return this.authservice.markVerified(userId, email);
   }
 }

@@ -1,9 +1,11 @@
 import { IsEmail, IsNotEmpty, MinLength } from 'class-validator';
 import { Transform } from 'class-transformer';
-import { normalizeEmail } from './normalize-email.js';
+import { normalizeEmailString } from './normalize-email.js';
 
 export class CreateUserDto {
-  @Transform(normalizeEmail)
+  @Transform(({ value }) => {
+    return typeof value === 'string' ? normalizeEmailString(value) : value;
+  })
   @IsEmail()
   @IsNotEmpty()
   email: string;

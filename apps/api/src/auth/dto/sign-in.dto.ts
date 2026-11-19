@@ -1,15 +1,17 @@
 import { Transform } from 'class-transformer';
-import { normalizeEmail } from '../../users/dto/normalize-email.js';
-import { IsEmail, IsNotEmpty, IsString, MinLength } from 'class-validator';
+import { normalizeEmailString } from '../../users/dto/normalize-email.js';
+import { IsEmail, IsNotEmpty, IsString, MaxLength } from 'class-validator';
 
 export class SignInDto {
-  @Transform(normalizeEmail)
+  @Transform(({ value }) => {
+    return typeof value === 'string' ? normalizeEmailString(value) : value;
+  })
   @IsNotEmpty()
   @IsEmail()
   email: string;
 
-  @MinLength(8)
   @IsString()
   @IsNotEmpty()
+  @MaxLength(128)
   password: string;
 }

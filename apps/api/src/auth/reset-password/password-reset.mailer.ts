@@ -5,8 +5,7 @@ import {
   type PasswordResetLink,
 } from '@nestjs/authentication';
 import { Mailer, type Mailable } from '@nestjs/mail';
-
-import { UsersService } from '../users/users.service.js';
+import { AuthService } from '../auth.service.js';
 
 @Injectable()
 export class PasswordResetMail implements Mailable<PasswordResetLink> {
@@ -22,8 +21,8 @@ export class PasswordResetMail implements Mailable<PasswordResetLink> {
 @Injectable()
 export class PasswordResetMailer extends PasswordResetHandler {
   constructor(
-    private readonly usersService: UsersService,
     private readonly mailer: Mailer,
+    private readonly authservice: AuthService,
     registry: AuthenticationRegistry,
   ) {
     super();
@@ -33,12 +32,12 @@ export class PasswordResetMailer extends PasswordResetHandler {
   // The link goes to the address the account has stored, and works only while
   // the account keeps that address and this hash: any change invalidates it.
   async findUser(email: string) {
-    const found = await this.usersService.findForPasswordReset(email);
+    const found = await this.authservice.findForPasswordReset(email);
     return (
       found && {
         id: found.id,
         email: found.email,
-        passwordHash: found.passwordHash,
+        passwordHash: found.password,
       }
     );
   }
@@ -48,6 +47,6 @@ export class PasswordResetMailer extends PasswordResetHandler {
   }
 
   updatePassword(userId: string, passwordHash: string) {
-    return this.usersService.updatePasswordHash(userId, passwordHash);
+    return this.authservice.updatePasswordHash(userId, passwordHash);
   }
 }
