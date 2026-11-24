@@ -47,7 +47,47 @@ export { Prisma }
  */
 export type User = Prisma.UserModel
 /**
+ * Model UserProfile
+ * 
+ */
+export type UserProfile = Prisma.UserProfileModel
+/**
  * Model UserIdentity
  * 
  */
 export type UserIdentity = Prisma.UserIdentityModel
+/**
+ * Model Pets
+ * 
+ */
+export type Pets = Prisma.PetsModel
+/**
+ * Model Posts
+ * 
+ */
+export type Posts = Prisma.PostsModel
+/**
+ * Model Titles
+ * 
+ */
+export type Titles = Prisma.TitlesModel
+/**
+ * Model Appointments
+ * 
+ */
+export type Appointments = Prisma.AppointmentsModel
+/**
+ * Model MedicalHistory
+ * 
+ */
+export type MedicalHistory = Prisma.MedicalHistoryModel
+/**
+ * Model Business
+ * 
+ */
+export type Business = Prisma.BusinessModel
+/**
+ * Model Events
+ * 
+ */
+export type Events = Prisma.EventsModel

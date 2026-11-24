@@ -9,5 +9,13 @@
  * 🟢 You can import this file directly.
  */
 export type * from './models/User.js'
+export type * from './models/UserProfile.js'
 export type * from './models/UserIdentity.js'
+export type * from './models/Pets.js'
+export type * from './models/Posts.js'
+export type * from './models/Titles.js'
+export type * from './models/Appointments.js'
+export type * from './models/MedicalHistory.js'
+export type * from './models/Business.js'
+export type * from './models/Events.js'
 export type * from './commonInputTypes.js'

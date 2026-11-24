@@ -4,9 +4,10 @@ import { UsersController } from './users.controller.js';
 import { UsersService } from './users.service.js';
 import { UsersDataService } from './user.data-service.js';
 import { PrismaService } from '../prisma/prisma.service.js';
+import { ProfilesModule } from '../profiles/profiles.module.js';
 
 @Module({
-  imports: [PrismaModule],
+  imports: [PrismaModule, ProfilesModule],
   controllers: [UsersController],
   providers: [UsersService, UsersDataService],
   exports: [UsersService, UsersDataService],

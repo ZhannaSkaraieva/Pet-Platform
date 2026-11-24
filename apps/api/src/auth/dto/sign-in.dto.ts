@@ -6,12 +6,12 @@ export class SignInDto {
   @Transform(({ value }) => {
     return typeof value === 'string' ? normalizeEmailString(value) : value;
   })
-  @IsNotEmpty()
-  @IsEmail()
+  @IsNotEmpty({ message: 'Please Enter your Email' })
+  @IsEmail({}, { message: 'Please Enter a Valid Email' })
   email: string;
 
   @IsString()
-  @IsNotEmpty()
+  @IsNotEmpty({ message: 'Please Enter your Password' })
   @MaxLength(128)
   password: string;
 }

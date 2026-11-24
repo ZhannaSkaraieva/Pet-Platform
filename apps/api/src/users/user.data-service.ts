@@ -26,10 +26,10 @@ export class UsersDataService {
   }
 
   async findOne(id?: string, email?: string): Promise<User | null> {
-    return await this.prisma.user.findUnique({
+    return await this.prisma.user.findFirst({
       where: {
-        id: id,
-        email: email,
+        ...(id && { id }),
+        ...(email && { email }),
       },
     });
   }

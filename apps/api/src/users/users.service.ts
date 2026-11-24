@@ -58,18 +58,18 @@ export class UsersService {
     }));
   }
 
-  async findOne(id?: string, email?: string) {
+  async findOne(id?: string, email?: string): Promise<UserResponse | null> {
     if (!id && !email) {
       throw new BadRequestException('Id or email is required');
     }
-    try {
-      return await this.usersDataService.findOne(id, email);
-    } catch {
-      throw new Error('Error fetching users');
+    const user = await this.usersDataService.findOne(id, email);
+    if (!user) {
+      throw new NotFoundException('User not found');
     }
+    return { id: user.id, email: user.email, isVerified: user.isVerified };
   }
 
-  async findById(id: string): Promise<UserResponse | null> {
+  async findById(id: string): Promise<UserResponse> {
     const user = await this.usersDataService.findOne(id);
     if (!user) {
       throw new NotFoundException('User not found');
@@ -77,7 +77,7 @@ export class UsersService {
     return { id: user.id, email: user.email, isVerified: user.isVerified };
   }
 
-  async findByEmail(email: string): Promise<UserResponse | null> {
+  async findByEmail(email: string): Promise<UserResponse> {
     const user = await this.usersDataService.findOne(undefined, email);
     if (!user) {
       throw new NotFoundException('User not found');

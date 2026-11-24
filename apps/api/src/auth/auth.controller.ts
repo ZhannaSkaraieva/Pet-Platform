@@ -118,7 +118,7 @@ export class AuthController {
   // "Sign in with Google" links here. With ?link=true, "Connect Google"
   // links the Google account to the signed-in customer instead.
   @Public()
-  @Public()
+  @AuthPublic()
   @Get('oidc/:provider/login')
   @Redirect()
   login(

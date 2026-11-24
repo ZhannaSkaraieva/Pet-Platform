@@ -17,9 +17,36 @@ model User {
   email     String   @unique
   password  String?
   isVerified    Boolean  @default(false)
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  
   identities   UserIdentity[]
+  isAnonymized   Boolean   @default(false)
+  anonymizedAt   DateTime?
+  profile    UserProfile? 
+  pets       Pets[]
+}
+
+model UserProfile {
+  id        String   @id @default(uuid())
+
+  userId    String @unique
+  user      User?    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  firstName String?
+  lastName  String?
+  phone     String?
+  country   String?
+  city      String?
+  address   String?
+
+  posts     Posts[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId])
 }
 
 model UserIdentity {
@@ -27,9 +54,143 @@ model UserIdentity {
   provider  String                  // "google"
   subject   String                  // постоянный id аккаунта у Google
   userId    String
-user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   createdAt DateTime @default(now())
 
   @@unique([provider, subject])
   @@index([userId])
+}
+
+model Pets {
+  id        String   @id @default(uuid())
+  name      String
+  photo_url  String?
+  gender     Gender
+  breed     String
+  ownerId   String
+  owner     User     @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  date_of_birth DateTime?
+  description String?
+  titles   Titles[]
+  appointments Appointments[]
+  medical_history MedicalHistory[]
+  events   Events[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([ownerId])
+}
+
+enum Gender {
+  male
+  female
+}
+
+model Posts {
+  id        String   @id @default(uuid())
+  title     String
+  content   String?
+  authorProfId  String
+  authorProf    UserProfile @relation(fields: [authorProfId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([authorProfId])
+}
+
+model Titles {
+  id        String   @id @default(uuid())
+  title     String
+  description String?
+  petId     String
+  pet       Pets     @relation(fields: [petId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([petId])
+}
+
+model Appointments {
+  id        String   @id @default(uuid())
+  title     String
+  description String?
+  date      DateTime
+  time      String
+  petId     String
+  pet       Pets     @relation(fields: [petId], references: [id], onDelete: Cascade)
+  businessId String?
+  business   Business? @relation(fields: [businessId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  status    AppointmentStatus   @default(pending)
+
+  @@index([petId])
+}
+
+enum AppointmentStatus {
+  pending
+  confirmed
+  cancelled
+  completed
+}
+
+model MedicalHistory {
+  id        String   @id @default(uuid())
+  title     String
+  description String?
+  date      DateTime
+  petId     String
+  pet       Pets     @relation(fields: [petId], references: [id], onDelete: Cascade)
+  businessId String
+  business   Business? @relation(fields: [businessId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([petId])
+}
+
+model Business {
+  id        String   @id @default(uuid())
+  name      String
+  photo_url  String?
+  description String?
+  type       BusinessType  @default(exhibition)
+  city      String?
+  address_map_coordinates  String?
+  working_hours String?
+  phone     String?
+  email     String?
+  website   String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  medical_histories MedicalHistory[]
+  events   Events[]
+  appointments Appointments[]
+
+  @@index([name])
+}
+
+enum BusinessType {
+  exhibition
+  meeting
+  clinic
+  grooming
+  shop
+  treiner
+}
+
+model Events {
+  id        String   @id @default(uuid())
+  title     String
+  photo_url  String?
+  description String?
+  date      DateTime
+  petId     String
+  pet       Pets     @relation(fields: [petId], references: [id], onDelete: Cascade)
+  businessId String?
+  business   Business? @relation(fields: [businessId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([petId])
 }

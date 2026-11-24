@@ -13,6 +13,14 @@ import {
   SmtpTransport,
 } from '@nestjs/mail';
 import { join } from 'node:path';
+import { ProfilesModule } from './profiles/profiles.module.js';
+import { PetsModule } from './pets/pets.module.js';
+import { PostsModule } from './posts/posts.module.js';
+import { TitlesModule } from './titles/titles.module.js';
+import { AppointmentsModule } from './appointments/appointments.module.js';
+import { MedicalhistoryModule } from './medicalhistory/medicalhistory.module.js';
+import { BusinessModule } from './business/business.module.js';
+import { EventsModule } from './events/events.module.js';
 
 export const { ObserveModule, ObserveInstrument } = createObserveModule();
 
@@ -67,6 +75,14 @@ export const { ObserveModule, ObserveInstrument } = createObserveModule();
 
     UsersModule,
     AuthModule,
+    ProfilesModule,
+    PetsModule,
+    PostsModule,
+    TitlesModule,
+    AppointmentsModule,
+    MedicalhistoryModule,
+    BusinessModule,
+    EventsModule,
   ],
   controllers: [AppController],
   providers: [AppService],

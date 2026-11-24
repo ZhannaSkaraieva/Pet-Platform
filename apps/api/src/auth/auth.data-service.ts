@@ -7,18 +7,19 @@ export class AuthDataService {
   constructor(private readonly prisma: PrismaService) {}
 
   async createUser(data: Prisma.UserCreateInput): Promise<User> {
-    try {
-      return await this.prisma.user.create({ data });
-    } catch (error) {
-      if (
-        error instanceof Prisma.PrismaClientKnownRequestError &&
-        error.code === 'P2002'
-      ) {
-        throw new ConflictException('User with this email already exists');
-      }
+    return await this.prisma.$transaction(async (tx) => {
+      const newUser = await tx.user.create({
+        data,
+      });
 
-      throw error;
-    }
+      await tx.userProfile.create({
+        data: {
+          userId: newUser.id,
+        },
+      });
+
+      return newUser;
+    });
   }
 
   async findById(id: string): Promise<User | null> {

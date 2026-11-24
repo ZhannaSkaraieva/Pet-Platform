@@ -52,7 +52,15 @@ export const AnyNull = runtime.AnyNull
 
 export const ModelName = {
   User: 'User',
-  UserIdentity: 'UserIdentity'
+  UserProfile: 'UserProfile',
+  UserIdentity: 'UserIdentity',
+  Pets: 'Pets',
+  Posts: 'Posts',
+  Titles: 'Titles',
+  Appointments: 'Appointments',
+  MedicalHistory: 'MedicalHistory',
+  Business: 'Business',
+  Events: 'Events'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -77,10 +85,28 @@ export const UserScalarFieldEnum = {
   password: 'password',
   isVerified: 'isVerified',
   createdAt: 'createdAt',
-  updatedAt: 'updatedAt'
+  updatedAt: 'updatedAt',
+  isAnonymized: 'isAnonymized',
+  anonymizedAt: 'anonymizedAt'
 } as const
 
 export type UserScalarFieldEnum = (typeof UserScalarFieldEnum)[keyof typeof UserScalarFieldEnum]
+
+
+export const UserProfileScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  firstName: 'firstName',
+  lastName: 'lastName',
+  phone: 'phone',
+  country: 'country',
+  city: 'city',
+  address: 'address',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type UserProfileScalarFieldEnum = (typeof UserProfileScalarFieldEnum)[keyof typeof UserProfileScalarFieldEnum]
 
 
 export const UserIdentityScalarFieldEnum = {
@@ -92,6 +118,110 @@ export const UserIdentityScalarFieldEnum = {
 } as const
 
 export type UserIdentityScalarFieldEnum = (typeof UserIdentityScalarFieldEnum)[keyof typeof UserIdentityScalarFieldEnum]
+
+
+export const PetsScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  photo_url: 'photo_url',
+  gender: 'gender',
+  breed: 'breed',
+  ownerId: 'ownerId',
+  date_of_birth: 'date_of_birth',
+  description: 'description',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type PetsScalarFieldEnum = (typeof PetsScalarFieldEnum)[keyof typeof PetsScalarFieldEnum]
+
+
+export const PostsScalarFieldEnum = {
+  id: 'id',
+  title: 'title',
+  content: 'content',
+  authorProfId: 'authorProfId',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type PostsScalarFieldEnum = (typeof PostsScalarFieldEnum)[keyof typeof PostsScalarFieldEnum]
+
+
+export const TitlesScalarFieldEnum = {
+  id: 'id',
+  title: 'title',
+  description: 'description',
+  petId: 'petId',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type TitlesScalarFieldEnum = (typeof TitlesScalarFieldEnum)[keyof typeof TitlesScalarFieldEnum]
+
+
+export const AppointmentsScalarFieldEnum = {
+  id: 'id',
+  title: 'title',
+  description: 'description',
+  date: 'date',
+  time: 'time',
+  petId: 'petId',
+  businessId: 'businessId',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  status: 'status'
+} as const
+
+export type AppointmentsScalarFieldEnum = (typeof AppointmentsScalarFieldEnum)[keyof typeof AppointmentsScalarFieldEnum]
+
+
+export const MedicalHistoryScalarFieldEnum = {
+  id: 'id',
+  title: 'title',
+  description: 'description',
+  date: 'date',
+  petId: 'petId',
+  businessId: 'businessId',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type MedicalHistoryScalarFieldEnum = (typeof MedicalHistoryScalarFieldEnum)[keyof typeof MedicalHistoryScalarFieldEnum]
+
+
+export const BusinessScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  photo_url: 'photo_url',
+  description: 'description',
+  type: 'type',
+  city: 'city',
+  address_map_coordinates: 'address_map_coordinates',
+  working_hours: 'working_hours',
+  phone: 'phone',
+  email: 'email',
+  website: 'website',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type BusinessScalarFieldEnum = (typeof BusinessScalarFieldEnum)[keyof typeof BusinessScalarFieldEnum]
+
+
+export const EventsScalarFieldEnum = {
+  id: 'id',
+  title: 'title',
+  photo_url: 'photo_url',
+  description: 'description',
+  date: 'date',
+  petId: 'petId',
+  businessId: 'businessId',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type EventsScalarFieldEnum = (typeof EventsScalarFieldEnum)[keyof typeof EventsScalarFieldEnum]
 
 
 export const SortOrder = {
