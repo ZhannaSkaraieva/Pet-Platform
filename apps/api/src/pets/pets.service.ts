@@ -1,26 +1,53 @@
-import { Injectable } from '@nestjs/common';
-import { CreatePetDto } from './dto/create-pet.dto.js';
+import { Injectable, NotFoundException } from '@nestjs/common';
+import { PetsDataService } from './pets.data-service.js';
+import { CreatePet, ResponsePet } from './entities/pet.entity.js';
 import { UpdatePetDto } from './dto/update-pet.dto.js';
 
 @Injectable()
 export class PetsService {
-  create(createPetDto: CreatePetDto) {
-    return 'This action adds a new pet';
+  constructor(private readonly petsDataService: PetsDataService) {}
+
+  async createNewPet(
+    petType: CreatePet,
+    ownerId: string,
+  ): Promise<ResponsePet> {
+    return await this.petsDataService.createNewPet({ ...petType, ownerId });
   }
 
-  findAll() {
-    return `This action returns all pets`;
+  async findAllPets(ownerId: string): Promise<ResponsePet[]> {
+    return await this.petsDataService.findAllPets(ownerId);
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} pet`;
+  async findOnePetById(id: string, ownerId: string): Promise<ResponsePet> {
+    const pet = await this.petsDataService.findOnePetById(id, ownerId);
+    if (!pet) {
+      throw new NotFoundException('Pet not found');
+    }
+    return pet;
   }
 
-  update(id: number, updatePetDto: UpdatePetDto) {
-    return `This action updates a #${id} pet`;
+  async updatePet(
+    id: string,
+    updatePetDto: UpdatePetDto,
+    ownerId: string,
+  ): Promise<ResponsePet> {
+    const pet = await this.petsDataService.findOnePetById(id, ownerId);
+    if (!pet) {
+      throw new NotFoundException('Pet not found');
+    }
+    const updatePet = await this.petsDataService.updatePet(
+      id,
+      updatePetDto,
+      ownerId,
+    );
+    return updatePet;
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} pet`;
+  async removePet(id: string, ownerId: string): Promise<ResponsePet> {
+    const pet = await this.petsDataService.removePet(id, ownerId);
+    if (!pet) {
+      throw new NotFoundException('Pet not found');
+    }
+    return pet;
   }
 }

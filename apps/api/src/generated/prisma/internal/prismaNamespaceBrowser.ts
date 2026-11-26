@@ -126,9 +126,9 @@ export const PetsScalarFieldEnum = {
   photo_url: 'photo_url',
   gender: 'gender',
   breed: 'breed',
-  ownerId: 'ownerId',
   date_of_birth: 'date_of_birth',
   description: 'description',
+  ownerId: 'ownerId',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const

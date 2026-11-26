@@ -25,14 +25,14 @@ model User {
   isAnonymized   Boolean   @default(false)
   anonymizedAt   DateTime?
   profile    UserProfile? 
-  pets       Pets[]
+  pets       Pet[]
 }
 
 model UserProfile {
   id        String   @id @default(uuid())
 
   userId    String @unique
-  user      User?    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user      User    @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   firstName String?
   lastName  String?
@@ -61,24 +61,29 @@ model UserIdentity {
   @@index([userId])
 }
 
-model Pets {
+model Pet {
   id        String   @id @default(uuid())
   name      String
-  photo_url  String?
-  gender     Gender
+  photoUrl  String? @map("photo_url")
+  gender     Gender 
   breed     String
+  dateOfBirth DateTime @map("date_of_birth")
+  description String?
+  
   ownerId   String
   owner     User     @relation(fields: [ownerId], references: [id], onDelete: Cascade)
-  date_of_birth DateTime?
-  description String?
+
   titles   Titles[]
   appointments Appointments[]
   medical_history MedicalHistory[]
   events   Events[]
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
   @@index([ownerId])
+  
+  
 }
 
 enum Gender {
@@ -103,7 +108,7 @@ model Titles {
   title     String
   description String?
   petId     String
-  pet       Pets     @relation(fields: [petId], references: [id], onDelete: Cascade)
+  pet       Pet     @relation(fields: [petId], references: [id], onDelete: Cascade)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -117,7 +122,7 @@ model Appointments {
   date      DateTime
   time      String
   petId     String
-  pet       Pets     @relation(fields: [petId], references: [id], onDelete: Cascade)
+  pet       Pet     @relation(fields: [petId], references: [id], onDelete: Cascade)
   businessId String?
   business   Business? @relation(fields: [businessId], references: [id], onDelete: Cascade)
   createdAt DateTime @default(now())
@@ -140,7 +145,7 @@ model MedicalHistory {
   description String?
   date      DateTime
   petId     String
-  pet       Pets     @relation(fields: [petId], references: [id], onDelete: Cascade)
+  pet       Pet     @relation(fields: [petId], references: [id], onDelete: Cascade)
   businessId String
   business   Business? @relation(fields: [businessId], references: [id], onDelete: Cascade)
   createdAt DateTime @default(now())
@@ -186,7 +191,7 @@ model Events {
   description String?
   date      DateTime
   petId     String
-  pet       Pets     @relation(fields: [petId], references: [id], onDelete: Cascade)
+  pet       Pet     @relation(fields: [petId], references: [id], onDelete: Cascade)
   businessId String?
   business   Business? @relation(fields: [businessId], references: [id], onDelete: Cascade)
   createdAt DateTime @default(now())
